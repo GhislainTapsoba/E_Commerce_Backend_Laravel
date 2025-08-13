@@ -10,6 +10,8 @@ use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 use App\Models\User;
 
 /*
@@ -23,6 +25,16 @@ Route::get('/', function () {
 });
 
 Auth::routes(['register' => false]); // Désactiver l'inscription publique
+
+Route::post('/test-reset-link', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    return response()->json(['status' => $status]);
+});
 
 Route::middleware(['auth'])->group(function () {
     

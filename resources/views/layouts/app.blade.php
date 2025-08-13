@@ -45,6 +45,13 @@
             font-size: 0.75rem;
             padding: 0.35rem 0.65rem;
         }
+        .logo-border-shadow {
+            border: 3px solid indigo;      /* Bordure indigo */
+            border-radius: 8px;            /* Coins arrondis */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Ombre portée */
+            padding: 5px;                  /* Un petit espace entre image et bordure */
+            background-color: white;       /* Fond blanc pour contraste */
+        }
     </style>
 </head>
 <body>
