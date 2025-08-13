@@ -48,6 +48,11 @@ Route::middleware(['auth'])->group(function () {
     // Gestion des commandes
     Route::resource('orders', OrderController::class)->except(['create', 'store']);
     Route::get('orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
+    Route::resource('orders', OrderController::class);
+    // Route spécifique pour la mise à jour du statut
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])
+        ->name('orders.update-status')
+        ->middleware('permission:orders.edit');
 
     // Gestion des clients
     Route::resource('customers', CustomerController::class);
