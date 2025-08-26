@@ -7,8 +7,8 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-header bg-primary text-white rounded-top">
                 <h5 class="mb-0">Informations de la zone</h5>
             </div>
             <div class="card-body">
@@ -16,8 +16,8 @@
                     @csrf
                     
                     <div class="mb-3">
-                        <label for="name" class="form-label">Nom de la zone</label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                        <label for="name" class="form-label fw-semibold">Nom de la zone</label>
+                        <input type="text" class="form-control rounded-pill @error('name') is-invalid @enderror" 
                                id="name" name="name" value="{{ old('name') }}" required>
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -25,8 +25,8 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" 
+                        <label for="description" class="form-label fw-semibold">Description</label>
+                        <textarea class="form-control rounded @error('description') is-invalid @enderror" 
                                   id="description" name="description" rows="3">{{ old('description') }}</textarea>
                         @error('description')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -35,19 +35,19 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="delivery_fee" class="form-label">Frais de livraison (F CFA)</label>
-                            <input type="number" class="form-control @error('delivery_fee') is-invalid @enderror" 
+                            <label for="delivery_fee" class="form-label fw-semibold">Frais de livraison (F CFA)</label>
+                            <input type="number" class="form-control rounded-pill @error('delivery_fee') is-invalid @enderror" 
                                    id="delivery_fee" name="delivery_fee" value="{{ old('delivery_fee', 0) }}" min="0" step="100" required>
                             @error('delivery_fee')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         
-                        <div class="col-md-6 mb-3">
-                            <div class="form-check mt-4">
+                        <div class="col-md-6 mb-3 d-flex align-items-center">
+                            <div class="form-check form-switch w-100">
                                 <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" 
                                        {{ old('is_active', true) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="is_active">
+                                <label class="form-check-label fw-semibold" for="is_active">
                                     Zone active
                                 </label>
                             </div>
@@ -56,18 +56,17 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="delivery_time_min" class="form-label">Temps min. de livraison (minutes)</label>
-                            <input type="number" class="form-control @error('delivery_time_min') is-invalid @enderror" 
+                            <label for="delivery_time_min" class="form-label fw-semibold">Temps min. de livraison (minutes)</label>
+                            <input type="number" class="form-control rounded-pill @error('delivery_time_min') is-invalid @enderror" 
                                    id="delivery_time_min" name="delivery_time_min" value="{{ old('delivery_time_min') }}" min="0">
                             @error('delivery_time_min')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         
-                        // ...existing code...
                         <div class="col-md-6 mb-3">
-                            <label for="delivery_time_max" class="form-label">Temps max. de livraison (minutes)</label>
-                            <input type="number" class="form-control @error('delivery_time_max') is-invalid @enderror" 
+                            <label for="delivery_time_max" class="form-label fw-semibold">Temps max. de livraison (minutes)</label>
+                            <input type="number" class="form-control rounded-pill @error('delivery_time_max') is-invalid @enderror" 
                                    id="delivery_time_max" name="delivery_time_max" value="{{ old('delivery_time_max') }}" min="0">
                             @error('delivery_time_max')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -75,9 +74,9 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end">
-                        <a href="{{ route('delivery-zones.index') }}" class="btn btn-secondary me-2">Annuler</a>
-                        <button type="submit" class="btn btn-primary">Créer la zone</button>
+                    <div class="d-flex justify-content-end mt-3">
+                        <a href="{{ route('delivery-zones.index') }}" class="btn btn-secondary me-2 shadow-sm">Annuler</a>
+                        <button type="submit" class="btn btn-primary shadow-sm">Créer la zone</button>
                     </div>
                 </form>
             </div>

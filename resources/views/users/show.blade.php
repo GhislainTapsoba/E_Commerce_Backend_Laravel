@@ -1,3 +1,4 @@
+{{-- resources/views/users/show.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Détail utilisateur')
@@ -6,9 +7,12 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
+        <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Utilisateur : {{ $user->name }}</h5>
+                <h5 class="mb-0">
+                    <i class="bi bi-person-lines-fill me-2"></i>
+                    Utilisateur : {{ $user->name }}
+                </h5>
                 <div>
                     @can('users.edit')
                     <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm me-1">
@@ -29,16 +33,18 @@
                 </div>
             </div>
             <div class="card-body">
-                <dl class="row">
+                <dl class="row mb-4">
                     <dt class="col-sm-4">Nom</dt>
-                    <dd class="col-sm-8">{{ $user->name }}</dd>
+                    <dd class="col-sm-8"><strong>{{ $user->name }}</strong></dd>
 
                     <dt class="col-sm-4">Email</dt>
                     <dd class="col-sm-8">{{ $user->email }}</dd>
 
                     <dt class="col-sm-4">Rôle</dt>
                     <dd class="col-sm-8">
-                        <span class="badge bg-info">{{ $user->getRoleNames()->first() }}</span>
+                        <span class="badge bg-info text-dark">
+                            {{ $user->getRoleNames()->first() }}
+                        </span>
                     </dd>
 
                     <dt class="col-sm-4">Statut</dt>
@@ -50,9 +56,15 @@
 
                     <dt class="col-sm-4">Créé le</dt>
                     <dd class="col-sm-8">{{ $user->created_at->format('d/m/Y H:i') }}</dd>
+
+                    <dt class="col-sm-4">Dernière mise à jour</dt>
+                    <dd class="col-sm-8">{{ $user->updated_at->format('d/m/Y H:i') }}</dd>
                 </dl>
+
                 <div class="d-flex justify-content-end">
-                    <a href="{{ route('users.index') }}" class="btn btn-secondary">Retour à la liste</a>
+                    <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Retour à la liste
+                    </a>
                 </div>
             </div>
         </div>

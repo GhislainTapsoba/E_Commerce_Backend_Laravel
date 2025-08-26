@@ -5,11 +5,12 @@
 @section('page-title', 'Gestion des commandes')
 
 @section('content')
-<div class="row mb-3">
+<div class="row mb-4">
     <div class="col-md-8">
-        <!-- Filters -->
-        <form method="GET" class="row g-3">
+        <!-- Filtres -->
+        <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-3">
+                <label class="form-label">Statut</label>
                 <select name="status" class="form-select">
                     <option value="">Tous les statuts</option>
                     <option value="nouvelle" {{ request('status') == 'nouvelle' ? 'selected' : '' }}>Nouvelle</option>
@@ -20,6 +21,7 @@
                 </select>
             </div>
             <div class="col-md-3">
+                <label class="form-label">Zone</label>
                 <select name="zone" class="form-select">
                     <option value="">Toutes les zones</option>
                     @foreach($deliveryZones as $zone)
@@ -30,11 +32,12 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ request('search') }}">
+                <label class="form-label">Rechercher</label>
+                <input type="text" name="search" class="form-control" placeholder="Nom client, numéro de commande..." value="{{ request('search') }}">
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i>
+                    <i class="bi bi-search me-1"></i> Rechercher
                 </button>
             </div>
         </form>
@@ -42,19 +45,18 @@
     <div class="col-md-4 text-end">
         @can('statistics.export')
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportModal">
-            <i class="bi bi-download me-2"></i>
-            Exporter
+            <i class="bi bi-download me-2"></i> Exporter
         </button>
         @endcan
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
+<div class="card shadow-sm">
+    <div class="card-body p-0">
         @if($orders->count() > 0)
         <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
                     <tr>
                         <th>N° Commande</th>
                         <th>Client</th>
@@ -67,7 +69,7 @@
                 </thead>
                 <tbody>
                     @foreach($orders as $order)
-                    <tr>
+                    <tr class="{{ $order->status == 'nouvelle' ? 'table-primary' : ($order->status == 'en_cours_livraison' ? 'table-warning' : ($order->status == 'livree' ? 'table-success' : ($order->status == 'annulee' ? 'table-danger' : ''))) }}">
                         <td><strong>{{ $order->order_number }}</strong></td>
                         <td>
                             <div>{{ $order->customer->name }}</div>
@@ -76,23 +78,33 @@
                         <td>{{ $order->deliveryZone->name }}</td>
                         <td><strong>{{ number_format($order->total) }} F</strong></td>
                         <td>
-                            <span class="badge status-badge {{ $order->status_badge }}">
+                            @php
+                                $badgeColor = match($order->status) {
+                                    'nouvelle' => 'primary',
+                                    'en_cours_livraison' => 'warning text-dark',
+                                    'livree' => 'success',
+                                    'annulee' => 'danger',
+                                    'payee' => 'info text-dark',
+                                    default => 'secondary',
+                                };
+                            @endphp
+                            <span class="badge bg-{{ $badgeColor }}">
                                 {{ ucfirst(str_replace('_', ' ', $order->status)) }}
                             </span>
                         </td>
                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ route('orders.show', $order) }}" class="btn btn-outline-primary">
+                                <a href="{{ route('orders.show', $order) }}" class="btn btn-outline-primary" title="Voir">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 @can('orders.edit')
-                                <a href="{{ route('orders.edit', $order) }}" class="btn btn-outline-warning">
+                                <a href="{{ route('orders.edit', $order) }}" class="btn btn-outline-warning" title="Modifier">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 @endcan
                                 @can('orders.delete')
-                                <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('{{ $order->id }}')">
+                                <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('{{ $order->id }}')" title="Supprimer">
                                     <i class="bi bi-trash"></i>
                                 </button>
                                 @endcan
@@ -104,7 +116,7 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center p-3">
             {{ $orders->appends(request()->query())->links() }}
         </div>
         @else
@@ -152,8 +164,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-download me-2"></i>
-                        Exporter
+                        <i class="bi bi-download me-2"></i> Exporter
                     </button>
                 </div>
             </form>
@@ -188,20 +199,15 @@ function confirmDelete(orderId) {
     }
 }
 
-// Auto-set today's date for export
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    
+    const thirtyDaysAgo = new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0];
+
     const startDateInput = document.querySelector('input[name="start_date"]');
     const endDateInput = document.querySelector('input[name="end_date"]');
-    
-    if (startDateInput && !startDateInput.value) {
-        startDateInput.value = thirtyDaysAgo;
-    }
-    if (endDateInput && !endDateInput.value) {
-        endDateInput.value = today;
-    }
+
+    if(startDateInput && !startDateInput.value) startDateInput.value = thirtyDaysAgo;
+    if(endDateInput && !endDateInput.value) endDateInput.value = today;
 });
 </script>
 @endpush

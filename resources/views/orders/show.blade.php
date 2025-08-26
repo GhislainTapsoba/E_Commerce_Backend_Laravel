@@ -120,7 +120,7 @@
             <div class="card-header">
                 <h5 class="card-title mb-0">
                     <i class="bi bi-cart me-2"></i>
-                    Articles commandés ({{ $order->orderItems->count() }} {{ $order->orderItems->count() > 1 ? 'articles' : 'article' }})
+                    Articles commandés ({{ $order->items ? $order->items->count() : 0 }} {{ ($order->items && $order->items->count() > 1) ? 'articles' : 'article' }})
                 </h5>
             </div>
             <div class="card-body">
@@ -135,7 +135,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($order->orderItems as $item)
+                            @if($order->items)
+                            @foreach($order->items as $item)
                             <tr>
                                 <td>
                                     <strong>{{ $item->product_name }}</strong>
@@ -147,6 +148,14 @@
                                 <td class="text-end"><strong>{{ number_format($item->total_price) }} F</strong></td>
                             </tr>
                             @endforeach
+                            @else
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    <i class="bi bi-cart-x"></i>
+                                    Aucun article trouvé
+                                </td>
+                            </tr>
+                            @endif
                         </tbody>
                         <tfoot class="table-light">
                             <tr>
@@ -252,7 +261,7 @@
             <div class="card-body">
                 <div class="row mb-2">
                     <div class="col">Nombre d'articles:</div>
-                    <div class="col text-end"><strong>{{ $order->orderItems->sum('quantity') }}</strong></div>
+                    <div class="col text-end"><strong>{{ $order->items ? $order->items->sum('quantity') : 0 }}</strong></div>
                 </div>
                 <div class="row mb-2">
                     <div class="col">Sous-total:</div>

@@ -117,7 +117,7 @@
                                 </tr>
                             </thead>
                             <tbody id="order-items">
-                                @foreach($order->orderItems as $index => $item)
+                                @foreach($order->items as $index => $item)
                                 <tr>
                                     <td>
                                         <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}">
@@ -227,7 +227,7 @@
 
 @push('scripts')
 <script>
-let itemIndex = {{ $order->orderItems->count() }};
+let itemIndex = {{ $order->items ? $order->items->count() : 0 }};
 
 // Ajouter un nouvel article
 document.getElementById('add-item').addEventListener('click', function() {

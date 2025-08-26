@@ -7,7 +7,11 @@
 @section('content')
 <div class="row mb-3">
     <div class="col-md-8">
-        <!-- Search -->
+        <!-- Search / Filters (optionnel) -->
+        <form method="GET" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Rechercher un utilisateur..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+        </form>
     </div>
     <div class="col-md-4 text-end">
         @can('users.create')
@@ -19,12 +23,12 @@
     </div>
 </div>
 
-<div class="card">
+<div class="card shadow-sm">
     <div class="card-body">
         @if($users->count() > 0)
         <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
                     <tr>
                         <th>Nom</th>
                         <th>Email</th>
@@ -40,7 +44,7 @@
                         <td><strong>{{ $user->name }}</strong></td>
                         <td>{{ $user->email }}</td>
                         <td>
-                            <span class="badge bg-info">
+                            <span class="badge bg-info text-dark">
                                 {{ $user->getRoleNames()->first() }}
                             </span>
                         </td>
@@ -52,17 +56,17 @@
                         <td>{{ $user->created_at->format('d/m/Y') }}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ route('users.show', $user) }}" class="btn btn-outline-primary">
+                                <a href="{{ route('users.show', $user) }}" class="btn btn-outline-primary" title="Voir">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 @can('users.edit')
-                                <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-warning">
+                                <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-warning" title="Modifier">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 @endcan
                                 @can('users.delete')
                                 @if(!$user->hasRole('Super Administrateur') || \App\Models\User::role('Super Administrateur')->count() > 1)
-                                <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('{{ $user->id }}')">
+                                <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('{{ $user->id }}')" title="Supprimer">
                                     <i class="bi bi-trash"></i>
                                 </button>
                                 @endif
@@ -75,13 +79,14 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-center">
-            {{ $users->links() }}
+        <div class="d-flex justify-content-center mt-3">
+            {{ $users->appends(request()->query())->links() }}
         </div>
         @else
         <div class="text-center py-5">
             <i class="bi bi-people text-muted" style="font-size: 4rem;"></i>
             <h4 class="text-muted mt-3">Aucun utilisateur</h4>
+            <p class="text-muted">Aucun utilisateur ne correspond à vos critères.</p>
         </div>
         @endif
     </div>

@@ -13,78 +13,91 @@ use Illuminate\Support\Facades\Log;
 
 class EmailService
 {
+    /**
+     * Envoi des emails pour une nouvelle commande
+     */
     public function sendNewOrderNotification(Order $order)
     {
+        $adminEmail = config('mail.admin_email', 'arseneghislaintaps@gmail.com');
+
+        // Tableau des destinataires
+        $recipients = [
+            ['email' => $adminEmail, 'isCustomer' => false],
+        ];
+
+        if ($order->customer?->email) {
+            $recipients[] = ['email' => $order->customer->email, 'isCustomer' => true];
+        }
+
+        foreach ($recipients as $recipient) {
+            try {
+                Mail::to($recipient['email'])->send(new NewOrderNotification($order, $recipient['isCustomer']));
+
+                // Enregistrement notification réussie
+                Notification::create([
+                    'type' => 'email',
+                    'category' => 'order',
+                    'recipient' => $recipient['email'],
+                    'subject' => $recipient['isCustomer']
+                        ? 'Confirmation de commande #' . $order->order_number
+                        : 'Nouvelle commande #' . $order->order_number,
+                    'message' => $recipient['isCustomer']
+                        ? 'Votre commande a été confirmée.'
+                        : 'Une nouvelle commande a été passée.',
+                    'status' => 'sent',
+                    'order_id' => $order->id,
+                    'sent_at' => now(),
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('Erreur envoi email nouvelle commande à ' . $recipient['email'] . ': ' . $e->getMessage());
+
+                Notification::create([
+                    'type' => 'email',
+                    'category' => 'order',
+                    'recipient' => $recipient['email'],
+                    'subject' => $recipient['isCustomer']
+                        ? 'Confirmation de commande #' . $order->order_number
+                        : 'Nouvelle commande #' . $order->order_number,
+                    'message' => $recipient['isCustomer']
+                        ? 'Votre commande a été confirmée.'
+                        : 'Une nouvelle commande a été passée.',
+                    'status' => 'failed',
+                    'order_id' => $order->id,
+                    'metadata' => ['error' => $e->getMessage()],
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Envoi des emails pour mise à jour du statut de commande
+     */
+    public function sendOrderStatusUpdate(Order $order)
+    {
+        if (!$order->customer?->email) return;
+
         try {
-            // Email à l'administrateur
-            $adminEmail = config('mail.admin_email', 'admin@ecms.com');
-            
-            Mail::to($adminEmail)->send(new NewOrderNotification($order));
-            
-            // Enregistrer la notification
+            Mail::to($order->customer->email)->send(new OrderStatusUpdate($order));
+
             Notification::create([
                 'type' => 'email',
-                'recipient' => $adminEmail,
-                'subject' => 'Nouvelle commande #' . $order->order_number,
-                'message' => 'Une nouvelle commande a été passée.',
+                'category' => 'order',
+                'recipient' => $order->customer->email,
+                'subject' => 'Mise à jour commande #' . $order->order_number,
+                'message' => 'Le statut de votre commande a été mis à jour: ' . $order->status,
                 'status' => 'sent',
                 'order_id' => $order->id,
                 'sent_at' => now(),
             ]);
 
-            // Email au client (si email fourni)
-            if ($order->customer->email) {
-                Mail::to($order->customer->email)->send(new NewOrderNotification($order, true));
-                
-                Notification::create([
-                    'type' => 'email',
-                    'recipient' => $order->customer->email,
-                    'subject' => 'Confirmation de commande #' . $order->order_number,
-                    'message' => 'Votre commande a été confirmée.',
-                    'status' => 'sent',
-                    'order_id' => $order->id,
-                    'sent_at' => now(),
-                ]);
-            }
-
         } catch (\Exception $e) {
-            Log::error('Erreur envoi email nouvelle commande: ' . $e->getMessage());
-            
+            Log::error('Erreur envoi email mise à jour commande à ' . $order->customer->email . ': ' . $e->getMessage());
+
             Notification::create([
                 'type' => 'email',
-                'recipient' => $adminEmail ?? 'admin@ecms.com',
-                'subject' => 'Nouvelle commande #' . $order->order_number,
-                'message' => 'Une nouvelle commande a été passée.',
-                'status' => 'failed',
-                'order_id' => $order->id,
-                'metadata' => ['error' => $e->getMessage()],
-            ]);
-        }
-    }
-
-    public function sendOrderStatusUpdate(Order $order)
-    {
-        try {
-            if ($order->customer->email) {
-                Mail::to($order->customer->email)->send(new OrderStatusUpdate($order));
-                
-                Notification::create([
-                    'type' => 'email',
-                    'recipient' => $order->customer->email,
-                    'subject' => 'Mise à jour commande #' . $order->order_number,
-                    'message' => 'Le statut de votre commande a été mis à jour: ' . $order->status,
-                    'status' => 'sent',
-                    'order_id' => $order->id,
-                    'sent_at' => now(),
-                ]);
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi email mise à jour commande: ' . $e->getMessage());
-            
-            Notification::create([
-                'type' => 'email',
-                'recipient' => $order->customer->email ?? 'unknown',
+                'category' => 'order',
+                'recipient' => $order->customer->email,
                 'subject' => 'Mise à jour commande #' . $order->order_number,
                 'message' => 'Le statut de votre commande a été mis à jour: ' . $order->status,
                 'status' => 'failed',

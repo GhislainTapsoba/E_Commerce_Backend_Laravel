@@ -13,6 +13,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->string('type'); // email, sms, whatsapp
+            $table->enum('category', ['order','customer','system'])->default('system');
             $table->string('recipient');
             $table->string('subject')->nullable();
             $table->text('message');
