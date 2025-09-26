@@ -187,4 +187,17 @@ class OrderController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'total' => 'required|numeric',
+            'order_number' => 'required|unique:orders,order_number',
+        ]);
+
+        $order = Order::create($request->all());
+
+        return redirect()->route('orders.index');
+    }
 }

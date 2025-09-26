@@ -39,7 +39,7 @@
     @php
         $cards = [
             ['value' => $stats['orders_count'] ?? 0, 'label' => 'Commandes', 'color' => 'primary', 'icon' => 'bi-cart-check'],
-            ['value' => number_format($stats['orders_total'] ?? 0), 'label' => 'Total ventes', 'color' => 'success', 'icon' => 'bi-currency-dollar'],
+            ['value' => number_format($stats['orders_total'] ?? 0)  ."  FCFA", 'label' => 'Total ventes', 'color' => 'success', 'icon' => 'bi-piggy-bank'],
             ['value' => $stats['customers_count'] ?? 0, 'label' => 'Nouveaux clients', 'color' => 'info', 'icon' => 'bi-people'],
             ['value' => $stats['zones_count'] ?? 0, 'label' => 'Zones actives', 'color' => 'warning', 'icon' => 'bi-geo-alt']
         ];

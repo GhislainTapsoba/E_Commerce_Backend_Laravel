@@ -9,11 +9,6 @@
      style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
     <div class="col-md-6 col-lg-5">
         <div class="card shadow-lg border-0 rounded-4">
-            <div class="card-header text-center bg-white border-bottom-0 py-3">
-                <h4 class="mb-0 fw-bold text-primary">Créer un nouveau client</h4>
-                <p class="text-muted small">Remplissez les informations ci-dessous</p>
-            </div>
-
             <div class="card-body px-5 py-4">
                 <form method="POST" action="{{ route('customers.store') }}">
                     @csrf
@@ -81,10 +76,6 @@
                         <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">Créer</button>
                     </div>
                 </form>
-            </div>
-
-            <div class="card-footer text-center bg-white border-top-0 py-3">
-                <small class="text-muted">© {{ date('Y') }} ECMS. Tous droits réservés.</small>
             </div>
         </div>
     </div>

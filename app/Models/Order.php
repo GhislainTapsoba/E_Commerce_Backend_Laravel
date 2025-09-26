@@ -80,4 +80,14 @@ class Order extends Model
 
         return $badges[$this->status] ?? 'bg-secondary';
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(DeliveryZone::class);
+    }
 }
