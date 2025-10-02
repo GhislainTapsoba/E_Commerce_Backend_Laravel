@@ -177,7 +177,6 @@
                 <p>Contactez-nous si nécessaire :</p>
                 <p><strong>Téléphone :</strong> +226 05 92 98 83</p>
                 <p><strong>WhatsApp :</strong> +226 05 92 98 83</p>
-                <a href="{`https://wa.me/${whatsappNumber}`}/contact" class="btn">Nous contacter</a>
             </div>
         </div>
 

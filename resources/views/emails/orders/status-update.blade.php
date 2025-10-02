@@ -155,7 +155,6 @@
                 <p>Pour toute question concernant votre commande :</p>
                 <p><strong>Téléphone :</strong> +226 05 92 98 83</p>
                 <p><strong>WhatsApp :</strong> +226 05 92 98 83</p>
-                <a href="{{ config('app.url') }}/contact" class="btn">Nous contacter</a>
             </div>
         </div>
 
